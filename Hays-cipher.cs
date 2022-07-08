@@ -59,7 +59,18 @@ namespace differential_cryptanalysis
 
         private int[] HayesRound(int[] enterBlock, int[] roundKey, int numberOfBlocks, Dictionary<string, string> sBlock)
         {
-            int[] enterBlockXORRoundKey = Helpers.XOR(enterBlock, roundKey);
+            int[] enterBlockXORRoundKey;
+
+            if (roundKey.Length > 0)
+            {
+                enterBlockXORRoundKey = Helpers.XOR(enterBlock, roundKey);
+            }
+            else
+            {
+                enterBlockXORRoundKey = enterBlock;
+
+            }
+
 
             int[] sTransformedBlock = STransformation(enterBlockXORRoundKey, sBlock, numberOfBlocks);
 

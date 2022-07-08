@@ -68,5 +68,10 @@
 
             return array;
         }
+
+        public static string IntToBin(int number)
+        {
+            return Convert.ToString(number, 2).PadLeft(16, '0');
+        }
     }
 }
