@@ -61,14 +61,12 @@ namespace differential_cryptanalysis
         //    D_all.Add(D);
         //}
 
-        public static Dictionary<string, Dictionary<string, double>> PreSearch(string[] binArray)
+        public static Dictionary<string, Dictionary<string, double>> PreSearch(string[] binArray, string[] allBinArray, double pr)
         {
             int[] emptyArr = Array.Empty<int>();
-            double probability = 1 / Math.Pow(2, 16);
+            
 
             Dictionary<string, Dictionary<string, double>> D = new();
-
-            var allBinArray = Helpers.GetBinStringArray((int)Math.Pow(2, 16));
 
             foreach (string alpha in binArray)
             {
@@ -94,11 +92,11 @@ namespace differential_cryptanalysis
 
                     if (deltaAlpha.ContainsKey(beta))
                     {
-                        deltaAlpha[beta] += probability;
+                        deltaAlpha[beta] += pr;
                     }
                     else
                     {
-                        deltaAlpha.Add(beta, 0.0);
+                        deltaAlpha.Add(beta, pr);
                     }
 
                 }
@@ -136,7 +134,7 @@ namespace differential_cryptanalysis
         //}
 
 
-        public static Dictionary<string, double>[] DiffSearch(Dictionary<string, Dictionary<string, double>> D, string alpha)
+        public static Dictionary<string, double>[] DiffSearch(Dictionary<string, Dictionary<string, double>> D, string alpha, string[] allBinArray, double pr, double[] pMin)
         {
             Dictionary<string, double>[] result = new Dictionary<string, double>[6];
 
@@ -144,19 +142,47 @@ namespace differential_cryptanalysis
 
             result[0] = gamma_0;
 
-            for(int i = 1; i < 5; i++)
+            for(int i = 1; i <= 5; i++)
             {
                 Dictionary<string, double> gamma_next = new();
 
                 foreach(var betaPair in result[i - 1])
                 {
-                    foreach(var gammaPair in D.Where((el) => el.Key == alpha).First().Value)
-                    {
+                    D = PreSearch(new string[] { betaPair.Key }, allBinArray, pr);
 
+                    foreach(var gammaPair in D.Where((el) => el.Key == betaPair.Key).First().Value)
+                    {
+                        if (gamma_next.ContainsKey(gammaPair.Key))
+                        {
+                            //Console.WriteLine("=====");
+                            //Console.WriteLine(gamma_next[gammaPair.Key]);
+                            //Console.WriteLine("*=====");
+                            //Console.WriteLine(betaPair.Value);
+                            //Console.WriteLine(gammaPair.Value);
+                            //Console.WriteLine("*=====");
+                            gamma_next[gammaPair.Key] += betaPair.Value * gammaPair.Value;
+                            //Console.WriteLine(gamma_next[gammaPair.Key]);
+                            //Console.WriteLine("=====");
+                        }
+                        else
+                        {
+                            gamma_next.Add(gammaPair.Key, betaPair.Value * gammaPair.Value);
+                        }
                     }
                 }
-            }
 
+                foreach (var gammaItem in gamma_next)
+                {
+                    if (gammaItem.Value <= pMin[i])
+                    {
+                        gamma_next.Remove(gammaItem.Key);
+                    }
+                }
+
+                var gammaNextFiltered = gamma_next.Where((el) => el.Value > pMin[i]).ToDictionary(x => x.Key, x => x.Value);
+
+                result[i] = gammaNextFiltered;
+            }
             return result;
         }
     }
