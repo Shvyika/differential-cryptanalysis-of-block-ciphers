@@ -4,7 +4,7 @@ namespace differential_cryptanalysis
 {
     class HayesCipher
     {
-        private int[] STransformation(int[] xInput, Dictionary<string, string> sBlock, int numberOfBlocks)
+        public static int[] STransformation(int[] xInput, Dictionary<string, string> sBlock, int numberOfBlocks)
         {
             int[][] xInputSeparated = Helpers.GenerateArrayOfBitArrays(xInput, numberOfBlocks);
 
@@ -22,7 +22,7 @@ namespace differential_cryptanalysis
             return xOutput;
         }
 
-        private int[] Permutation(int[] enterBlock, int numberOfBlocks)
+        public static int[] Permutation(int[] enterBlock, int numberOfBlocks)
         {
             int[][] enterBlockSeparated = Helpers.GenerateArrayOfBitArrays(enterBlock, numberOfBlocks);
 
@@ -57,7 +57,7 @@ namespace differential_cryptanalysis
             return outputBlock;
         }
 
-        private int[] HayesRound(int[] enterBlock, int[] roundKey, int numberOfBlocks, Dictionary<string, string> sBlock)
+        public static int[] HayesRound(int[] enterBlock, int[] roundKey, int numberOfBlocks, Dictionary<string, string> sBlock)
         {
             int[] enterBlockXORRoundKey;
 

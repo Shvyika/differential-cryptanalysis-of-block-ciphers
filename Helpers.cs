@@ -2,6 +2,13 @@
 {
     class Helpers
     {
+        public static Dictionary<string, string> sBlock = new Dictionary<string, string> {
+                { "0000", "1010" }, { "0001", "1001" }, { "0010", "1101" }, { "0011", "0110" },
+                { "0100", "1110" }, { "0101", "1011" }, { "0110", "0100" }, { "0111", "0101" },
+                { "1000", "1111" }, { "1001", "0001" }, { "1010", "0011" }, { "1011", "1100" },
+                { "1100", "0111" }, { "1101", "0000" }, { "1110", "1000" }, { "1111", "0010" }
+            };
+
         public static int[] GenerateRandomBitArray(int length)
         {
             Random random = new();
@@ -37,19 +44,26 @@
 
         public static int[] XOR(int[] x, int[] y)
         {
-            if(x.Length != y.Length)
-            {
-                throw new ArgumentException("x length does not match y length");
-            }
-
             int[] result = new int[x.Length];
 
-            for( int i = 0; i < x.Length; i++ )
+            for(int i = 0; i < x.Length; i++)
             {
-                result[i] = Convert.ToInt32(x[i] != y[i]);
+                result[i] = x[i] ^ y[i];
             }
 
             return result;
+        }
+
+        public static string[] getBinStringArray(int amount)
+        {
+            string[] binStringArray = new string[amount];
+
+            for(int i = 0; i < amount; i++)
+            {
+                binStringArray[i] = Convert.ToString(i, 2).PadLeft(16, '0');
+            }
+
+            return binStringArray;
         }
 
         public static string ArrayToString(int[] array)
