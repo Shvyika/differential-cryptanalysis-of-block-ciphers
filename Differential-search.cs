@@ -49,7 +49,9 @@
 
             result[0] = gamma_0;
 
-            for(int i = 1; i <= 5; i++)
+            Console.WriteLine($"gamma 0 counted");
+
+            for (int i = 1; i <= 5; i++)
             {
                 Dictionary<string, double> gamma_next = new();
 
@@ -73,6 +75,8 @@
                 var gammaNextFiltered = gamma_next.Where((el) => el.Value > pMin[i]).ToDictionary(x => x.Key, x => x.Value);
 
                 result[i] = gammaNextFiltered;
+
+                Console.WriteLine($"gamma {i} counted");
             }
             return result;
         }

@@ -22,8 +22,8 @@
                     // ptTuples.Add(Tuple.Create(plainText, plainTextAlpha));
 
                     // plainText --> cipherText
-                    var cipherText = hc.Encrypt_2(plainTexts[j], hlp.StringToArray(allKeys[i]), hlp.sBlock);
-                    var cipherTextAlpha = hc.Encrypt_2(plainTextAlpha, hlp.StringToArray(allKeys[i]), hlp.sBlock);
+                    var cipherText = hc.Encrypt(plainTexts[j], hlp.StringToArray(allKeys[i]), hlp.sBlock);
+                    var cipherTextAlpha = hc.Encrypt(plainTextAlpha, hlp.StringToArray(allKeys[i]), hlp.sBlock);
 
                     //ctTuples.Add(Tuple.Create(cipherText, cipherTextAlpha));
 

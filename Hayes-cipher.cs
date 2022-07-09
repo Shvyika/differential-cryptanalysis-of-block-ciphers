@@ -80,7 +80,24 @@ namespace differential_cryptanalysis
             return permutedBlock;
         }
 
-        public int[] Encrypt(int[] enterBlock, int[] key, Dictionary<string, string> sBlock)
+
+        public int[] Encrypt(int[] enterBlock, int[] roundKey, Dictionary<string, string> sBlock)
+        { 
+            int[] block = enterBlock;
+
+            for (int i = 0; i < 6; i++)
+            {
+                int[] roundedBlock = HayesRound(block, roundKey, sBlock);
+
+                block = roundedBlock;
+            }
+
+            int[] outputBlock = hlp.XOR(block, roundKey);
+
+            return outputBlock;
+        }
+
+        public int[] EncryptForCheck(int[] enterBlock, int[] key, Dictionary<string, string> sBlock)
         {
             int[][] roundKeys = hlp.GenerateArrayOfBitArrays(key, 6 + 1);
 
@@ -94,22 +111,6 @@ namespace differential_cryptanalysis
             }
 
             int[] outputBlock = hlp.XOR(block, roundKeys[roundKeys.Length - 1]);
-
-            return outputBlock;
-        }
-
-        public int[] Encrypt_2(int[] enterBlock, int[] roundKey, Dictionary<string, string> sBlock)
-        { 
-            int[] block = enterBlock;
-
-            for (int i = 0; i < 6; i++)
-            {
-                int[] roundedBlock = HayesRound(block, roundKey, sBlock);
-
-                block = roundedBlock;
-            }
-
-            int[] outputBlock = hlp.XOR(block, roundKey);
 
             return outputBlock;
         }
