@@ -2,14 +2,24 @@
 {
     class Helpers
     {
-        public static Dictionary<string, string> sBlock = new Dictionary<string, string> {
+        private static readonly Random rnd = new();
+        public readonly int max = 65536;
+
+        public Dictionary<string, string> sBlock = new Dictionary<string, string> {
             { "0000", "1010" }, { "0001", "1001" }, { "0010", "1101" }, { "0011", "0110" },
             { "0100", "1110" }, { "0101", "1011" }, { "0110", "0100" }, { "0111", "0101" },
             { "1000", "1111" }, { "1001", "0001" }, { "1010", "0011" }, { "1011", "1100" },
             { "1100", "0111" }, { "1101", "0000" }, { "1110", "1000" }, { "1111", "0010" }
         };
 
-        public static string[] binArrayOneNonNullByte = new string[]
+        public Dictionary<string, string> sBlockInv = new Dictionary<string, string> {
+            { "1010", "0000" }, { "1001", "0001" }, { "1101", "0010" }, { "0110", "0011" },
+            { "1110", "0100" }, { "1011", "0101" }, { "0100", "0110" }, { "0101", "0111" },
+            { "1111", "1000" }, { "0001", "1001" }, { "0011", "1010" }, { "1100", "1011" },
+            { "0111", "1100" }, { "0000", "1101" }, { "1000", "1110" }, { "0010", "1111" }
+        };
+
+        public string[] binArrayOneNonNullByte = new string[]
         {
             "0000000000000001", "0000000000000010", "0000000000000011", "0000000000000100", "0000000000000101",
             "0000000000000110", "0000000000000111", "0000000000001000", "0000000000001001", "0000000000001010",
@@ -28,7 +38,7 @@
             "1011000000000000", "1100000000000000", "1101000000000000", "1110000000000000", "1111000000000000",
         };
 
-        public static int[] GenerateRandomBitArray(int length)
+        public int[] GenerateRandomBitArray(int length)
         {
             Random random = new();
 
@@ -42,14 +52,14 @@
             return bitArray;
         }
 
-        public static int[][] GenerateArrayOfBitArrays(int[] bitArray, int numberOfBitArrays)
+        public int[][] GenerateArrayOfBitArrays(int[] bitArray, int numberOfArrays = 4)
         {
             int keyLength = bitArray.Length;
-            int roundKeyLength = keyLength / numberOfBitArrays;
+            int roundKeyLength = keyLength / numberOfArrays;
 
-            int[][] roundKeys = new int[numberOfBitArrays][];
+            int[][] roundKeys = new int[numberOfArrays][];
 
-            for(int i = 0; i < numberOfBitArrays; i++)
+            for (int i = 0; i < numberOfArrays; i++)
             {
                 int[] roundKey = new int[roundKeyLength];
 
@@ -61,11 +71,32 @@
             return roundKeys;
         }
 
-        public static int[] XOR(int[] x, int[] y)
+        public int[][] GenereateRandomPlainTexts(int amoutOfText)
+        {
+            int[][] plainTexts = new int[amoutOfText][];
+
+            List<int> listInt = new();
+
+            for(int i = 0; i < amoutOfText; i++)
+            {
+                int randomInt = rnd.Next(0, max);
+
+                while (listInt.Contains(randomInt))
+                    randomInt = rnd.Next(0, max);
+
+                plainTexts[i] = StringToArray(IntToBin(randomInt));
+
+                listInt.Add(randomInt);
+            }
+
+            return plainTexts;
+        }
+
+        public int[] XOR(int[] x, int[] y)
         {
             int[] result = new int[x.Length];
 
-            for(int i = 0; i < x.Length; i++)
+            for (int i = 0; i < x.Length; i++)
             {
                 result[i] = x[i] ^ y[i];
             }
@@ -73,11 +104,11 @@
             return result;
         }
 
-        public static string[]  GetBinStringArray(int amount)
+        public string[] GetBinStringArray(int amount)
         {
             string[] binStringArray = new string[amount];
 
-            for(int i = 0; i < amount; i++)
+            for (int i = 0; i < amount; i++)
             {
                 binStringArray[i] = Convert.ToString(i, 2).PadLeft(16, '0');
             }
@@ -85,61 +116,27 @@
             return binStringArray;
         }
 
-        public static List<int[]> GetBinStringWithOneNonNullByte()
-        {
-            List<int[]> x_4 = Vectora(4);
 
-            List<int[]> arrays = new List<int[]>();
-            for (int i = 0; i < x_4.Count; i++)
-            {
-                for (int j = 0; j < 16; j = j + 4)
-                {
-                    int[] zeroArray = new int[16];
-                    Array.Copy(x_4[i], 0, zeroArray, 0, x_4[i].Length);
-                    arrays.Add(zeroArray);
-                }
-            }
-
-            return arrays;
-        }
-
-        public static List<int[]> Vectora(int n)
-        {
-            List<int[]> a = new List<int[]>();
-            for (int i = 1; i < Math.Pow(2, n); i++)
-            {
-                string binary_string = "";
-                binary_string = Convert.ToString(i, 2);
-                
-                int[] vector = new int[16];
-                while (binary_string.Length < n)
-                {
-                    binary_string = "0" + binary_string;
-                }
-                vector = binary_string.Select(s => int.Parse(s.ToString())).ToArray();
-                a.Add(vector);
-            }
-            return a;
-        }
-
-        public static string ArrayToString(int[] array)
+        public string ArrayToString(int[] array)
         {
             return String.Concat(array);
         }
 
-        public static int[] StringToArray(string str)
+        public int[] StringToArray(string str)
         {
-            int[] array = new int[str.Length];
+            char[] array = str.ToCharArray();
+
+            int[] result = new int[array.Length];
 
             for (int i = 0; i < str.Length; i++)
             {
-                array[i] = Int32.Parse(str[i].ToString());
+                result[i] = array[i] == '0' ? 0 : 1;
             }
 
-            return array;
+            return result;
         }
 
-        public static string IntToBin(int number)
+        public string IntToBin(int number)
         {
             return Convert.ToString(number, 2).PadLeft(16, '0');
         }
