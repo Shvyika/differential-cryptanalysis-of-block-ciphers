@@ -46,11 +46,15 @@
 
                     if (diff.ContainsKey(strResult))
                     {
-                        keyCounts[strResult] += 1;
-                    }
-                    else
-                    {
-                        keyCounts.Add(strResult, 1);
+                        if (keyCounts.ContainsKey(strResult))
+                        {
+                            keyCounts[strResult] += 1;
+                        }
+                        else
+                        {
+                            keyCounts.Add(strResult, 1);
+                        }
+                        
                     }
                 }
             }
